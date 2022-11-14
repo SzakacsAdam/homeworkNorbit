@@ -1,6 +1,16 @@
+from __future__ import annotations
+
 from os import walk as os_walk
 from os.path import join as path_join
+from typing import Any
+from typing import AsyncGenerator
+from typing import Callable
+from typing import Dict
 from typing import Generator
+from typing import Optional
+
+import aiofiles
+from aiocsv import AsyncDictReader
 
 
 class FileFinder:
@@ -23,7 +33,23 @@ class FileFinder:
 
 
 class CsvDictReader:
-    ...
+    _DEFAULT_DELIMITER: str = ','
+    __slots__ = ("_src", "_delimiter" "_file")
+
+    def __init__(self, src: str, *,
+                 delimiter: str = _DEFAULT_DELIMITER) -> None:
+        self._src: str = src
+        self._delimiter: str = delimiter
+
+        self._file: Optional[
+            AsyncGenerator[Dict, None, None]] = self.csv_reader()
+
+    async def csv_reader(self) -> AsyncGenerator[Dict[str, Any], None, None]:
+        async with aiofiles.open(self._src) as afp:
+            async for row in AsyncDictReader(afp,
+                                             delimiter=self._delimiter
+                                             ):
+                yield row
 
 
 class CoordinateCollection:
