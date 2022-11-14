@@ -50,6 +50,13 @@ class CsvDictReader:
         self._file: Optional[
             AsyncGenerator[Dict, None, None]] = self.csv_reader()
 
+    def __aiter__(self) -> CsvDictReader:
+        return self
+
+    async def __anext__(self) -> Dict[_KEY_FORMAT, _VAL_FORMAT]:
+        row = await anext(self._file)
+        return self.format_dict(row)
+
     async def csv_reader(self) -> AsyncGenerator[Dict[str, Any], None, None]:
         async with aiofiles.open(self._src) as afp:
             async for row in AsyncDictReader(afp,
