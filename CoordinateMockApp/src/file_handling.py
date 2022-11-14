@@ -34,12 +34,18 @@ class FileFinder:
 
 class CsvDictReader:
     _DEFAULT_DELIMITER: str = ','
-    __slots__ = ("_src", "_delimiter" "_file")
+    _KEY_FORMAT: Callable = str
+    _VAL_FORMAT: Callable = float
+    __slots__ = ("_src", "_delimiter", "key_format", "val_format", "_file")
 
     def __init__(self, src: str, *,
-                 delimiter: str = _DEFAULT_DELIMITER) -> None:
+                 delimiter: str = _DEFAULT_DELIMITER,
+                 key_format: Callable = _KEY_FORMAT,
+                 val_format: Callable = _VAL_FORMAT) -> None:
         self._src: str = src
         self._delimiter: str = delimiter
+        self.key_format: Callable = key_format
+        self.val_format: Callable = val_format
 
         self._file: Optional[
             AsyncGenerator[Dict, None, None]] = self.csv_reader()
@@ -50,6 +56,13 @@ class CsvDictReader:
                                              delimiter=self._delimiter
                                              ):
                 yield row
+
+    def format_dict(self, data: Dict[str, str]
+                    ) -> Dict[_KEY_FORMAT, _VAL_FORMAT]:
+        return {
+            self.key_format(key): self.val_format(val)
+            for key, val in data.items()
+        }
 
 
 class CoordinateCollection:
