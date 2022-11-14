@@ -1,0 +1,9 @@
+
+class FileFinder:
+    ...
+
+class CsvDictReader:
+    ...
+
+class CoordinateCollection:
+    ...
