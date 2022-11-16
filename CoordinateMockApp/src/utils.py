@@ -30,3 +30,11 @@ class AIOZipLongest:
         if all(val is None for val in res):
             raise StopAsyncIteration()
         return res
+
+
+def remove_none_from_list(lst: List) -> List:
+    return [
+        item
+        for item in lst
+        if item is not None
+    ]
