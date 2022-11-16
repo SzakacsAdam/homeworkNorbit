@@ -7,8 +7,8 @@ from websockets.legacy.server import WebSocketServerProtocol
 from websockets.exceptions import ConnectionClosed
 
 
-from collections_coord import InMemoryCollection
-from collections_coord import ReaderCollection
+from src.collections_coord import InMemoryCollection
+from src.collections_coord import ReaderCollection
 
 
 class SocketServer:

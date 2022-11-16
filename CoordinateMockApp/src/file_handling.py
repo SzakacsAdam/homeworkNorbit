@@ -94,10 +94,6 @@ class CsvDictReader:
         )
 
 
-class CoordinateCollection:
-    ...
-
-
 if __name__ == '__main__':
     import asyncio
 
