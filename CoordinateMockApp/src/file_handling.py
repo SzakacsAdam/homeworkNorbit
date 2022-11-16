@@ -56,12 +56,13 @@ class CsvDictReader:
         self._file: Optional[AsyncGenerator[Dict, None, None]] = None
 
     def __aiter__(self) -> CsvDictReader:
-        if self._file is None:
-            self._file = self.csv_reader()
         return self
 
     async def __anext__(self) -> Union[Dict[str, Any],
                                        Dict[_KEY_FORMAT, _VAL_FORMAT]]:
+
+        if self._file is None:
+            self._file = self.csv_reader()
 
         row = await anext(self._file)
 
@@ -88,10 +89,22 @@ class CsvDictReader:
             src=self._src,
             delimiter=self._delimiter,
             is_format=self._is_format,
-            key_format=self.key_format,
-            val_format=self.val_format
+            key_format=self._key_format,
+            val_format=self._val_format
         )
 
 
 class CoordinateCollection:
     ...
+
+
+if __name__ == '__main__':
+    import asyncio
+
+    async def main_async():
+        path: str = "/mnt/f/codeCoolHomework/homeworkNorbit_másolata/socket_boat_position/lines/line2.csv"
+        reader: CsvDictReader = CsvDictReader(path)
+        async for item in reader:
+            print(item)
+
+    asyncio.run(main_async())
