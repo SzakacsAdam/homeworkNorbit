@@ -43,13 +43,3 @@ class SocketServer:
 
     def start(self) -> None:
         asyncio.run(self.serve_socket())
-
-
-if __name__ == '__main__':
-
-    import os
-    resource_path: str = os.path.join(
-        "/mnt/f/codeCoolHomework/homeworkNorbit_másolata/socket_boat_position", "lines")
-    collection = InMemoryCollection(resource_path)
-    server = SocketServer(collection)
-    server.start()

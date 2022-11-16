@@ -92,15 +92,3 @@ class CsvDictReader:
             key_format=self._key_format,
             val_format=self._val_format
         )
-
-
-if __name__ == '__main__':
-    import asyncio
-
-    async def main_async():
-        path: str = "/mnt/f/codeCoolHomework/homeworkNorbit_másolata/socket_boat_position/lines/line2.csv"
-        reader: CsvDictReader = CsvDictReader(path)
-        async for item in reader:
-            print(item)
-
-    asyncio.run(main_async())
