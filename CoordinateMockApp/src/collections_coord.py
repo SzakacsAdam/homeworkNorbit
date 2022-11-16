@@ -5,10 +5,10 @@ from typing import Any
 from typing import List
 from typing import Optional
 
-from file_handling import FileFinder
-from file_handling import CsvDictReader
-from utils import sync_to_async_iterator
-from utils import AIOZipLongest
+from src.file_handling import FileFinder
+from src.file_handling import CsvDictReader
+from src.utils import sync_to_async_iterator
+from src.utils import AIOZipLongest
 
 
 class Collection(ABC):
