@@ -8,6 +8,7 @@ from typing import Callable
 from typing import Dict
 from typing import Generator
 from typing import Optional
+from typing import Union
 
 import aiofiles
 from aiocsv import AsyncDictReader
@@ -36,26 +37,37 @@ class CsvDictReader:
     _DEFAULT_DELIMITER: str = ','
     _KEY_FORMAT: Callable = str
     _VAL_FORMAT: Callable = float
-    __slots__ = ("_src", "_delimiter", "key_format", "val_format", "_file")
+    __slots__ = (
+        "_src", "_delimiter", "_is_format", "_key_format", "_val_format",
+        "_file"
+    )
 
     def __init__(self, src: str, *,
                  delimiter: str = _DEFAULT_DELIMITER,
+                 is_format: bool = True,
                  key_format: Callable = _KEY_FORMAT,
                  val_format: Callable = _VAL_FORMAT) -> None:
         self._src: str = src
         self._delimiter: str = delimiter
-        self.key_format: Callable = key_format
-        self.val_format: Callable = val_format
+        self._is_format: bool = is_format
+        self._key_format: Callable = key_format
+        self._val_format: Callable = val_format
 
-        self._file: Optional[
-            AsyncGenerator[Dict, None, None]] = self.csv_reader()
+        self._file: Optional[AsyncGenerator[Dict, None, None]] = None
 
     def __aiter__(self) -> CsvDictReader:
+        if self._file is None:
+            self._file = self.csv_reader()
         return self
 
-    async def __anext__(self) -> Dict[_KEY_FORMAT, _VAL_FORMAT]:
+    async def __anext__(self) -> Union[Dict[str, Any],
+                                       Dict[_KEY_FORMAT, _VAL_FORMAT]]:
+
         row = await anext(self._file)
-        return self.format_dict(row)
+
+        if self._is_format is True:
+            return self.format_dict(row)
+        return row
 
     async def csv_reader(self) -> AsyncGenerator[Dict[str, Any], None, None]:
         async with aiofiles.open(self._src) as afp:
@@ -67,9 +79,18 @@ class CsvDictReader:
     def format_dict(self, data: Dict[str, str]
                     ) -> Dict[_KEY_FORMAT, _VAL_FORMAT]:
         return {
-            self.key_format(key): self.val_format(val)
+            self._key_format(key): self._val_format(val)
             for key, val in data.items()
         }
+
+    def new(self) -> CsvDictReader:
+        return CsvDictReader(
+            src=self._src,
+            delimiter=self._delimiter,
+            is_format=self._is_format,
+            key_format=self.key_format,
+            val_format=self.val_format
+        )
 
 
 class CoordinateCollection:
