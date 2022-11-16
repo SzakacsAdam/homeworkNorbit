@@ -4,7 +4,9 @@ import asyncio
 import ntpath
 
 from typing import Any
+from typing import AsyncIterable
 from typing import AsyncIterator
+from typing import Iterable
 from typing import List
 from typing import Optional
 
@@ -38,3 +40,9 @@ def remove_none_from_list(lst: List) -> List:
         for item in lst
         if item is not None
     ]
+
+
+async def sync_to_async_iterator(iterable: Iterable[Any]
+                                 ) -> AsyncIterable[Any]:
+    for item in iterable:
+        yield item
