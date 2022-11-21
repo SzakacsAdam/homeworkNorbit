@@ -3,3 +3,5 @@
 /.idea/
 
 venv/
+CoordinateMockApp/src/CoordinateMockApp.egg-info/
+CoordinateMockApp/src/__pycache__/
