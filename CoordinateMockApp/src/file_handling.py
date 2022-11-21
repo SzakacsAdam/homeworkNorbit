@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from os import walk as os_walk
 from os.path import join as path_join
+from os.path import splitext as path_splitext
 from typing import Any
 from typing import AsyncGenerator
 from typing import Callable
@@ -12,6 +13,7 @@ from typing import Union
 
 import aiofiles
 from aiocsv import AsyncDictReader
+from src.utils import get_filename_from_path
 
 
 class FileFinder:
@@ -38,8 +40,8 @@ class CsvDictReader:
     _KEY_FORMAT: Callable = str
     _VAL_FORMAT: Callable = float
     __slots__ = (
-        "_src", "_delimiter", "_is_format", "_key_format", "_val_format",
-        "_file"
+        "_src", "_name", "_delimiter", "_is_format", "_key_format",
+        "_val_format", "_file"
     )
 
     def __init__(self, src: str, *,
@@ -48,6 +50,7 @@ class CsvDictReader:
                  key_format: Callable = _KEY_FORMAT,
                  val_format: Callable = _VAL_FORMAT) -> None:
         self._src: str = src
+        self._name: str = path_splitext(get_filename_from_path(src))[0]
         self._delimiter: str = delimiter
         self._is_format: bool = is_format
         self._key_format: Callable = key_format
@@ -67,7 +70,8 @@ class CsvDictReader:
         row = await anext(self._file)
 
         if self._is_format is True:
-            return self.format_dict(row)
+            row = self.format_dict(row)
+        row["name"] = self._name
         return row
 
     async def csv_reader(self) -> AsyncGenerator[Dict[str, Any], None, None]:
